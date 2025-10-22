@@ -30,6 +30,7 @@ Perfect for getting notified when your Time Machine remote backups stop working 
 - `setup.sh` - Install/uninstall/status management
 - `tm-healthcheck.conf` - Configuration settings
 - `README.md` - This file
+- `LICENSE` - MIT License
 
 ## Configuration
 
@@ -52,9 +53,14 @@ SUCCESS_URL="https://hc-ping.com/YOUR-CHECK-ID/YOUR-CHECK-NAME"
 
 1. Checks if Time Machine is currently backing up
 2. If not, finds the latest **remote backup** (NAS, external drives)
-3. Sends success ping to healthcheck.io
-4. Records execution details in `lastrun` file
+3. If backup is older than configured interval (default: 24h), sends failure ping
+4. Otherwise, sends success ping to healthcheck.io
+5. Records execution details in `lastrun` file
 
 **Note:** Only monitors remote backups, not local snapshots. This ensures you're alerted about permanent backup failures, not temporary local storage issues.
 
 healthcheck.io will alert you if the script doesn't run (backup issues, travel, etc.).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
