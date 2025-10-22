@@ -2,7 +2,7 @@
 
 # Load configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_FILE="$SCRIPT_DIR/config.conf"
+CONFIG_FILE="$SCRIPT_DIR/tm-healthcheck.conf"
 
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Config file not found: $CONFIG_FILE"
@@ -28,7 +28,7 @@ case "$1" in
     <string>$AGENT_LABEL</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$SCRIPT_DIR/latest-backup-timestamp.sh</string>
+        <string>$SCRIPT_DIR/tm-monitor.sh</string>
         <string>$MAX_AGE_HOURS</string>
     </array>
     <key>StartInterval</key>

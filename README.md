@@ -1,70 +1,60 @@
-# Time Machine Health Check
+# macOS Time Machine Health Check
 
-## Purpose
+Monitor Time Machine remote backups (NAS, external drives) and send health check signals to healthcheck.io. Automatically skips checks during active backups.
 
-Monitors Time Machine backup age and sends health check signals to ensure backups are recent. The script only sends success signals and lets healthcheck.io handle timeout detection for more reliable monitoring.
+Perfect for getting notified when your Time Machine remote backups stop working - whether you're traveling, have network issues, or backup problems.
 
 ## Features
 
-- ✅ **Configurable** via `config.conf` file
-- ✅ **Dynamic script path resolution** - works anywhere you install it
-- ✅ **Backup progress detection** - skips checks during active backups
-- ✅ **Execution tracking** - `lastrun` file with detailed information
-- ✅ **Easy customization** - URLs and timing settings
-- ✅ **Success-only pings** - no false alarms during travel/backups
+- ✅ Monitors Time Machine remote backup age (NAS, external drives)
+- ✅ Sends success pings to healthcheck.io
+- ✅ Skips checks during active backups
+- ✅ Configurable via `tm-healthcheck.conf`
+- ✅ Works anywhere you install it
+
+## Quick Start
+
+1. **Configure** your healthcheck.io URL in `tm-healthcheck.conf`
+2. **Install** the launch agent:
+   ```bash
+   ./setup.sh install
+   ```
+3. **Check status**:
+   ```bash
+   ./setup.sh status
+   ```
 
 ## Files
 
-- `latest-backup-timestamp.sh` - Main script (loads config)
-- `setup.sh` - Install/uninstall/status/config management
-- `config.conf` - Configuration file
+- `tm-monitor.sh` - Main monitoring script
+- `setup.sh` - Install/uninstall/status management
+- `tm-healthcheck.conf` - Configuration settings
 - `README.md` - This file
 
-## Configuration (`config.conf`)
+## Configuration
 
-### MANDATORY SETTINGS
-- `SUCCESS_URL` - Health check success endpoint
+Edit `tm-healthcheck.conf` to set your healthcheck.io URL:
 
-### OPTIONAL SETTINGS
-- `MAX_AGE_HOURS` - Maximum backup age in hours (default: 72)
-- `AGENT_LABEL` - Launch agent identifier
-- `AGENT_NAME` - Display name
-- `INITIAL_DELAY` - Minutes to wait after login (default: 5)
-- `INTERVAL_MINUTES` - Minutes between checks (default: 60)
+```bash
+SUCCESS_URL="https://hc-ping.com/YOUR-CHECK-ID/YOUR-CHECK-NAME"
+```
 
-## Usage
+## Commands
 
-### Setup Commands
 ```bash
 ./setup.sh install    # Install launch agent
-./setup.sh status     # Check status and configuration
-./setup.sh config     # Show current configuration
+./setup.sh status     # Check status
+./setup.sh config     # Show configuration
 ./setup.sh uninstall  # Remove launch agent
 ```
 
-### Manual Execution
-```bash
-./latest-backup-timestamp.sh [max_age_hours]
-```
-
-## Default Settings
-
-- **Max age**: 72 hours
-- **Schedule**: 5 minutes after login, then every 60 minutes
-- **Endpoint**: `https://hc-ping.com/YwnSXEIGX-YS1zQEh5N7oA/littleblue_tm`
-
 ## How It Works
 
-1. **Checks for active backups** - Skips if Time Machine is currently backing up
-2. **Finds latest backup** - Uses `tmutil listbackups` to get most recent backup
-3. **Sends success ping** - Only sends success signals to healthcheck.io
-4. **Tracks execution** - Records timestamp and backup info in `lastrun` file
-5. **Timeout detection** - healthcheck.io alerts if script doesn't run (travel/backup issues)
+1. Checks if Time Machine is currently backing up
+2. If not, finds the latest **remote backup** (NAS, external drives)
+3. Sends success ping to healthcheck.io
+4. Records execution details in `lastrun` file
 
-## Status Output
+**Note:** Only monitors remote backups, not local snapshots. This ensures you're alerted about permanent backup failures, not temporary local storage issues.
 
-The `./setup.sh status` command shows:
-- Agent running status
-- Current configuration
-- Last execution details (timestamp, backup checked, location)
-- Launch agent information (plist location, modification time)
+healthcheck.io will alert you if the script doesn't run (backup issues, travel, etc.).
